@@ -68,6 +68,7 @@ describe('games data-access helpers', () => {
     });
 
     describe('filtering', () => {
+        /** Ids of the seeded categories and publishers. */
         let ids: { catA: number; catB: number; catC: number; pubX: number; pubY: number };
 
         beforeEach(async () => {
@@ -91,6 +92,7 @@ describe('games data-access helpers', () => {
             ]);
         });
 
+        /** Titles of games returned by `getGames` for the given filters. */
         const titles = async (f: Parameters<typeof getGames>[1]): Promise<string[]> =>
             (await getGames(db, f)).map((g) => g.title);
 

@@ -62,6 +62,35 @@ test.describe('Game filters', () => {
     await expect(boxes.first()).toBeChecked();
   });
 
+  test('multi-category filter unions categories, ANDs with publisher, and restores all from the URL', async ({ page }) => {
+    const cards = page.getByTestId('game-card');
+    const total = await cards.count();
+    const boxes = page.locator('[data-testid^="filter-category-"]');
+    const select = page.getByTestId('filter-publisher');
+    const publisherId = await select.locator('option').nth(1).getAttribute('value');
+
+    await test.step('Select two categories', async () => {
+      await boxes.nth(0).check();
+      const one = await cards.filter({ visible: true }).count();
+      await boxes.nth(1).check();
+      const two = await cards.filter({ visible: true }).count();
+      expect(two).toBeGreaterThan(one);
+      await expect(page.getByTestId('filter-status')).toHaveText(`Showing ${two} of ${total} games`);
+      await expect(page).toHaveURL(/category=\d+&category=\d+/);
+    });
+
+    await test.step('Add a publisher and reload', async () => {
+      await select.selectOption(publisherId!);
+      await expect(page).toHaveURL(new RegExp(`publisher=${publisherId}`));
+      const filtered = await cards.filter({ visible: true }).count();
+      await page.reload();
+      await expect(boxes.nth(0)).toBeChecked();
+      await expect(boxes.nth(1)).toBeChecked();
+      await expect(select).toHaveValue(publisherId!);
+      await expect(cards.filter({ visible: true })).toHaveCount(filtered);
+    });
+  });
+
   test('restores filters from the URL', async ({ page }) => {
     const id = await page.locator('[data-testid^="filter-category-"]').first().getAttribute('value');
     await page.goto(`/?category=${id}`);

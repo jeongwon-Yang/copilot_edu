@@ -1,12 +1,19 @@
 ---
+/** A selectable filter option. */
 interface Option {
+    /** Value submitted for the option. */
     id: number;
+    /** Visible label. */
     name: string;
 }
 
+/** Props for the game filter form. */
 interface Props {
+    /** Categories shown as checkboxes. */
     categories: Option[];
+    /** Publishers shown in the select. */
     publishers: Option[];
+    /** Total number of games, used in the result status message. */
     total: number;
 }
 
@@ -75,6 +82,11 @@ const focus = 'focus:ring-2 focus:ring-blue-500 focus:outline-none';
         const noResults = document.getElementById('no-results');
         const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-testid="game-card"]'));
 
+        /**
+         * Shows or hides cards for the current selection and updates the status text.
+         *
+         * @param updateUrl - Whether to mirror the selection into the URL query string.
+         */
         const apply = (updateUrl: boolean): void => {
             const selected = checkboxes.filter((c) => c.checked).map((c) => c.value);
             const publisher = select.value;
