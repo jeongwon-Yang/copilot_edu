@@ -118,6 +118,16 @@ test.describe('Game Listing and Navigation', () => {
     });
   });
 
+  test('should display a rating on every game card', async ({ page }) => {
+    await page.goto('/');
+    const ratings = page.getByTestId('game-card').getByTestId('game-card-rating');
+    const count = await ratings.count();
+    expect(count).toBeGreaterThan(0);
+    for (let i = 0; i < count; i++) {
+      await expect(ratings.nth(i)).toHaveText(/(\d\.\d \/ 5|No rating yet)/);
+    }
+  });
+
   test('should return a 404 page for a non-existent game', async ({ page }) => {
     let response: Response | null;
 
